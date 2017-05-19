@@ -13,15 +13,18 @@ case class Record(key: Int, value: String)
 object ThesisServer {
   def main(args: Array[String]): Unit = {
     URL.setURLStreamHandlerFactory(new FsUrlStreamHandlerFactory())
-    val spark = args(0) match {
-      case "true" => SparkSession.builder
+
+    var selection = ""
+    if (args.length > 0) selection = args(0)
+
+    val spark = selection match {
+      case "cluster" => SparkSession.builder
         .appName("Spark Examples")
-        .master("local[*]")
         .enableHiveSupport()
         .getOrCreate()
       case _ => SparkSession.builder
         .appName("Spark Examples")
-        //.master("local[*]")
+        .master("local[*]")
         .enableHiveSupport()
         .getOrCreate()
     }
@@ -42,10 +45,12 @@ object ThesisServer {
     df.write.mode("overwrite").saveAsTable("records")
     //df.write.partitionBy()//TODO new partitioner
 
-    HiveThriftServer2.startWithContext(spark.sqlContext)
+//    HiveThriftServer2.startWithContext(spark.sqlContext)
 
-    //val result=spark.sql("SELECT * FROM records")
-    //result.collect().foreach(println)
+    println(esri_jar.toString)
+
+    val result=spark.sql("SELECT * FROM records")
+    result.collect().foreach(println)
 /*
     spark.sql("ADD JAR "+esri_jar)
     spark.sql("ADD JAR "+hive_input_jar)
