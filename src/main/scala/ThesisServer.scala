@@ -220,6 +220,7 @@ object ThesisServer {
 
     val opts = Map(
       "url" -> "jdbc:postgresql://83.212.119.169:5430/",
+      "driver" -> "org.postgresql.Driver",
       "user" -> "postgres",
       "password" -> "mysecretpassword",
       "dbtable" -> "temp_geo_values")
