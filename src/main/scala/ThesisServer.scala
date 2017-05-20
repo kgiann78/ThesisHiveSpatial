@@ -218,30 +218,7 @@ object ThesisServer {
     spark.sql("create function ST_Bin as 'com.esri.hadoop.hive.ST_Bin'")
     spark.sql("create function ST_BinEnvelope as 'com.esri.hadoop.hive.ST_BinEnvelope'")
 
-    val opts = Map(
-      "url" -> "jdbc:postgresql://83.212.119.169:5430/",
-      "driver" -> "org.postgresql.Driver",
-      "user" -> "postgres",
-      "password" -> "mysecretpassword",
-      "dbtable" -> "temp_geo_values")
 
-    val df = spark
-      .read
-      .format("jdbc")
-      .options(opts)
-      .load
-
-    import spark.implicits._
-
-    val wkt2geoJSON = (wkbString: String) => {
-      val aux: Array[Byte] = WKBReader.hexToBytes(wkbString)
-      val geom: Geometry = new WKBReader().read(aux)
-      val g0: OGCGeometry = OGCGeometry.fromText(geom.toString)
-      g0.asGeoJson()
-    }
-
-    val wkt2geoJSONUDF = udf(wkt2geoJSON)
-    df.withColumn("json", wkt2geoJSONUDF('strdfgeo)).write.mode("overwrite").parquet("hdfs:///geo_values")
 
 
     //spark.sql("CREATE TABLE demo_shape_point(shape string) STORED AS ORC")
