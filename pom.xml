@@ -7,8 +7,10 @@
     <groupId>uoa.di</groupId>
     <artifactId>thesis-spatial</artifactId>
     <version>1.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
 
-    <name>ThesisSpatial</name>
+    <name>thesis-spatial</name>
+    <url>http://maven.apache.org</url>
 
     <properties>
         <maven.compiler.source>1.8</maven.compiler.source>
@@ -19,8 +21,8 @@
     </properties>
 
     <modules>
-	<module>./thesis-thrift-server</module>	
-	<module>./thesis-database-importer</module>
+        <module>./thesis-thrift-server</module>
+        <module>./thesis-database-importer</module>
     </modules>
 
 </project>
