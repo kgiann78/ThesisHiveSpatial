@@ -6,14 +6,14 @@ import com.vividsolutions.jts.geom.Geometry
 import com.vividsolutions.jts.io.WKBReader
 import org.apache.spark.sql.functions.udf
 
+import scala.collection.JavaConverters._
+
 
 object DatabaseImport {
-
   def main(args: Array[String]): Unit = {
     val parser = new CmdLineParser(CliArgs)
 
     try {
-      import collection.JavaConverters._
       parser.parseArgument(args.toList.asJava)
     } catch {
       case e: CmdLineException =>
@@ -21,7 +21,6 @@ object DatabaseImport {
         parser.printUsage(System.out)
         System.exit(1)
     }
-
 
     val spark = CliArgs.spark_mode match {
       case "cluster" => SparkSession.builder
@@ -74,19 +73,19 @@ object DatabaseImport {
 
     @Option(name = "-mode", required = true,
       usage = "Declares spark session mode (client or cluster)")
-    var spark_mode: String = null
+    var spark_mode: String = _
 
     @Option(name = "-table", required = true,
       usage = "Table to prepare")
-    var table: String = null
+    var table: String = _
 
     @Option(name = "-column",
       usage = "Column to overwrite")
-    var column: String = null
+    var column: String = _
 
     @Option(name = "-convert",
       usage = "Conversion method to use (wkt2geoJSON or wkt2text) ")
-    var convert: String = null
+    var convert: String = _
   }
 
 }
