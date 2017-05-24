@@ -24,40 +24,74 @@ object DatabaseImport {
 
     val spark = CliArgs.spark_mode match {
       case "cluster" => SparkSession.builder
-          .appName("Spark Examples")
-          .enableHiveSupport()
-          .getOrCreate()
+        .appName("Spark Examples")
+        .enableHiveSupport()
+        .getOrCreate()
       case _ => SparkSession.builder
-          .appName("Spark Examples")
-          .master("local[*]")
-          .enableHiveSupport()
-          .getOrCreate()
+        .appName("Spark Examples")
+        .master("local[*]")
+        .enableHiveSupport()
+        .getOrCreate()
     }
-
-    val opts = Map(
-      "url" -> "jdbc:postgresql://83.212.119.169:5430/",
-      "driver" -> "org.postgresql.Driver",
-      "user" -> "postgres",
-      "password" -> "mysecretpassword",
-      "dbtable" -> CliArgs.table)
-
-    val df = spark
-      .read
-      .format("jdbc")
-      .options(opts)
-      .load
 
     import spark.implicits._
 
-    val wkt2geoJSON = (wkbString: String) => {
-      val aux: Array[Byte] = WKBReader.hexToBytes(wkbString)
-      val geom: Geometry = new WKBReader().read(aux)
-      val g0: OGCGeometry = OGCGeometry.fromText(geom.toString)
-      g0.asGeoJson()
-    }
+    if (CliArgs.convert != null && !CliArgs.convert.isEmpty) {
 
-    val wkt2geoJSONUDF = udf(wkt2geoJSON)
-    df.withColumn("strdfgeo", wkt2geoJSONUDF('strdfgeo)).write.mode("overwrite").parquet("hdfs:///geo_values_parquet")
+      if (CliArgs.field == null
+        || (CliArgs.field != null && CliArgs.field.isEmpty)
+        || CliArgs.table == null
+        || (CliArgs.table != null && CliArgs.table.isEmpty)) return
+
+
+      val opts = Map(
+        "url" -> "jdbc:postgresql://83.212.119.169:5430/",
+        "driver" -> "org.postgresql.Driver",
+        "user" -> "postgres",
+        "password" -> "mysecretpassword",
+        "dbtable" -> CliArgs.table)
+
+      val df = spark
+        .read
+        .format("jdbc")
+        .options(opts)
+        .load
+
+      CliArgs.convert match {
+        case "wkt2geoJSON" =>
+          val wkt2geoJSON = (wkbString: String) => {
+            val aux: Array[Byte] = WKBReader.hexToBytes(wkbString)
+            val geom: Geometry = new WKBReader().read(aux)
+            val g0: OGCGeometry = OGCGeometry.fromText(geom.toString)
+            g0.asGeoJson()
+          }
+
+          val wkt2geoJSONUDF = udf(wkt2geoJSON)
+
+          df.withColumn(CliArgs.field, wkt2geoJSONUDF(df.col(CliArgs.field)))
+            .write.mode("overwrite")
+            .parquet("hdfs:///" + CliArgs.table + "_parquet")
+
+          spark.sql("")
+
+
+        case "wkt2text" =>
+          val wkt2text = (wkbString: String) => {
+            val aux: Array[Byte] = WKBReader.hexToBytes(wkbString)
+            val geom: Geometry = new WKBReader().read(aux)
+            val g0: OGCGeometry = OGCGeometry.fromText(geom.toString)
+            g0.asText()
+          }
+
+          val wkt2textUDF = udf(wkt2text)
+
+          df.withColumn(CliArgs.field, wkt2textUDF(df.col(CliArgs.field)))
+            .write.mode("overwrite")
+            .parquet("hdfs:///" + CliArgs.table + "_parquet")
+        case _ =>
+          println(CliArgs.convert + " is not yet implemented")
+      }
+    }
 
     //    CREATE TABLE geo_values_parquet (id int, srid int, strdfgeo string)
     //    ROW FORMAT SERDE 'com.esri.hadoop.hive.serde.JsonSerde'
@@ -86,10 +120,11 @@ object DatabaseImport {
     @Option(name = "-convert",
       usage = "Conversion method to use (wkt2geoJSON or wkt2text) ")
     var convert: String = _
+
+    @Option(name = "-field",
+      usage = "Field to provide modification")
+    var field: String = _
   }
-
-
-
 
 
   //spark.sql("CREATE TABLE demo_shape_point(shape string) STORED AS ORC")
