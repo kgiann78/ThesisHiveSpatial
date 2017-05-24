@@ -4,15 +4,17 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <parent>
-        <groupId>uoa.di</groupId>
-        <artifactId>thesis-spatial</artifactId>
-        <version>1.0-SNAPSHOT</version>
-    </parent>
-
     <groupId>uoa.di</groupId>
     <artifactId>thesis-database-importer</artifactId>
     <version>1.0-SNAPSHOT</version>
+
+    <properties>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <scala.tools.version>2.11.8</scala.tools.version>
+        <scala.version>2.11.8</scala.version>
+    </properties>
 
     <name>thesis-database-importer</name>
 

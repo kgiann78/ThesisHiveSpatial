@@ -12,14 +12,6 @@
     <name>thesis-spatial</name>
     <url>http://maven.apache.org</url>
 
-    <properties>
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <scala.tools.version>2.11.8</scala.tools.version>
-        <scala.version>2.11.8</scala.version>
-    </properties>
-
     <modules>
         <module>./thesis-thrift-server</module>
         <module>./thesis-database-importer</module>
