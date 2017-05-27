@@ -36,26 +36,25 @@ object DatabaseImport {
 
     import spark.implicits._
 
+    val opts = Map(
+      "url" -> "jdbc:postgresql://83.212.119.169:5430/",
+      "driver" -> "org.postgresql.Driver",
+      "user" -> "postgres",
+      "password" -> "mysecretpassword",
+      "dbtable" -> CliArgs.table)
+
+    val df = spark
+      .read
+      .format("jdbc")
+      .options(opts)
+      .load
+
     if (CliArgs.convert != null && !CliArgs.convert.isEmpty) {
 
       if (CliArgs.field == null
         || (CliArgs.field != null && CliArgs.field.isEmpty)
         || CliArgs.table == null
         || (CliArgs.table != null && CliArgs.table.isEmpty)) return
-
-
-      val opts = Map(
-        "url" -> "jdbc:postgresql://83.212.119.169:5430/",
-        "driver" -> "org.postgresql.Driver",
-        "user" -> "postgres",
-        "password" -> "mysecretpassword",
-        "dbtable" -> CliArgs.table)
-
-      val df = spark
-        .read
-        .format("jdbc")
-        .options(opts)
-        .load
 
       CliArgs.convert match {
         case "wkt2geoJSON" =>
@@ -69,11 +68,6 @@ object DatabaseImport {
           val wkt2geoJSONUDF = udf(wkt2geoJSON)
 
           df.withColumn(CliArgs.field, wkt2geoJSONUDF(df.col(CliArgs.field)))
-            .write.mode("overwrite")
-            .parquet("hdfs:///" + CliArgs.table + "_parquet")
-
-          spark.sql("")
-
 
         case "wkt2text" =>
           val wkt2text = (wkbString: String) => {
@@ -86,12 +80,14 @@ object DatabaseImport {
           val wkt2textUDF = udf(wkt2text)
 
           df.withColumn(CliArgs.field, wkt2textUDF(df.col(CliArgs.field)))
-            .write.mode("overwrite")
-            .parquet("hdfs:///" + CliArgs.table + "_parquet")
+
         case _ =>
           println(CliArgs.convert + " is not yet implemented")
       }
     }
+
+    df.write.mode("overwrite")
+      .parquet("hdfs:///" + CliArgs.table + "_parquet")
 
     //    CREATE TABLE geo_values_parquet (id int, srid int, strdfgeo string)
     //    ROW FORMAT SERDE 'com.esri.hadoop.hive.serde.JsonSerde'
