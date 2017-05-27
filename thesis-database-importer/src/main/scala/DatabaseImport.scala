@@ -68,6 +68,8 @@ object DatabaseImport {
           val wkt2geoJSONUDF = udf(wkt2geoJSON)
 
           df.withColumn(CliArgs.field, wkt2geoJSONUDF(df.col(CliArgs.field)))
+            .write.mode("overwrite")
+            .parquet("hdfs:///" + CliArgs.table + "_parquet")
 
         case "wkt2text" =>
           val wkt2text = (wkbString: String) => {
@@ -80,7 +82,8 @@ object DatabaseImport {
           val wkt2textUDF = udf(wkt2text)
 
           println("Creating table " + CliArgs.table + "_parquet to hive")
-          df.withColumn(CliArgs.field, wkt2textUDF(df.col(CliArgs.field))).write.mode("overwrite")
+          df.withColumn(CliArgs.field, wkt2textUDF(df.col(CliArgs.field)))
+            .write.mode("overwrite")
             .parquet("hdfs:///" + CliArgs.table + "_parquet")
 
         case "wkt2binary" =>
@@ -94,7 +97,8 @@ object DatabaseImport {
           val wkt2geoJSONUDF = udf(wkt2binary)
 
           println("Creating table " + CliArgs.table + "_parquet to hive")
-          df.withColumn(CliArgs.field, wkt2geoJSONUDF(df.col(CliArgs.field))).write.mode("overwrite")
+          df.withColumn(CliArgs.field, wkt2geoJSONUDF(df.col(CliArgs.field)))
+            .write.mode("overwrite")
             .parquet("hdfs:///" + CliArgs.table + "_parquet")
 
 
@@ -107,7 +111,6 @@ object DatabaseImport {
       df.write.mode("overwrite")
         .parquet("hdfs:///" + CliArgs.table + "_parquet")
     }
-
 
 
     //    CREATE TABLE geo_values_parquet (id int, srid int, strdfgeo string)
