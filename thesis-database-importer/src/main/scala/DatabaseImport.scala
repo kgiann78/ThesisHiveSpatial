@@ -79,15 +79,36 @@ object DatabaseImport {
 
           val wkt2textUDF = udf(wkt2text)
 
-          df.withColumn(CliArgs.field, wkt2textUDF(df.col(CliArgs.field)))
+          println("Creating table " + CliArgs.table + "_parquet to hive")
+          df.withColumn(CliArgs.field, wkt2textUDF(df.col(CliArgs.field))).write.mode("overwrite")
+            .parquet("hdfs:///" + CliArgs.table + "_parquet")
+
+        case "wkt2binary" =>
+          val wkt2binary = (wkbString: String) => {
+            val aux: Array[Byte] = WKBReader.hexToBytes(wkbString)
+            val geom: Geometry = new WKBReader().read(aux)
+            val g0: OGCGeometry = OGCGeometry.fromText(geom.toString)
+            g0.asBinary()
+          }
+
+          val wkt2geoJSONUDF = udf(wkt2binary)
+
+          println("Creating table " + CliArgs.table + "_parquet to hive")
+          df.withColumn(CliArgs.field, wkt2geoJSONUDF(df.col(CliArgs.field))).write.mode("overwrite")
+            .parquet("hdfs:///" + CliArgs.table + "_parquet")
+
 
         case _ =>
           println(CliArgs.convert + " is not yet implemented")
       }
+    } else {
+      println("Creating table " + CliArgs.table + "_parquet to hive")
+
+      df.write.mode("overwrite")
+        .parquet("hdfs:///" + CliArgs.table + "_parquet")
     }
 
-    df.write.mode("overwrite")
-      .parquet("hdfs:///" + CliArgs.table + "_parquet")
+
 
     //    CREATE TABLE geo_values_parquet (id int, srid int, strdfgeo string)
     //    ROW FORMAT SERDE 'com.esri.hadoop.hive.serde.JsonSerde'
