@@ -86,21 +86,20 @@ object DatabaseImport {
             .write.mode("overwrite")
             .parquet("hdfs:///" + CliArgs.table + "_parquet")
 
-        case "wkt2binary" =>
-          val wkt2binary = (wkbString: String) => {
-            val aux: Array[Byte] = WKBReader.hexToBytes(wkbString)
-            val geom: Geometry = new WKBReader().read(aux)
-            val g0: OGCGeometry = OGCGeometry.fromText(geom.toString)
-            g0.asBinary()
-          }
-
-          val wkt2geoJSONUDF = udf(wkt2binary)
-
-          println("Creating table " + CliArgs.table + "_parquet to hive")
-          df.withColumn(CliArgs.field, wkt2geoJSONUDF(df.col(CliArgs.field)))
-            .write.mode("overwrite")
-            .parquet("hdfs:///" + CliArgs.table + "_parquet")
-
+//        case "wkt2binary" =>
+//          val wkt2binary = (wkbString: String) => {
+//            val aux: Array[Byte] = WKBReader.hexToBytes(wkbString)
+//            val geom: Geometry = new WKBReader().read(aux)
+//            val g0: OGCGeometry = OGCGeometry.fromText(geom.toString)
+//            g0.asBinary()
+//          }
+//
+//          val wkt2binaryUDF = udf(wkt2binary)
+//
+//          println("Creating table " + CliArgs.table + "_parquet to hive")
+//          df.withColumn(CliArgs.field, wkt2binaryUDF(df.col(CliArgs.field)))
+//            .write.mode("overwrite")
+//            .parquet("hdfs:///" + CliArgs.table + "_parquet")
 
         case _ =>
           println(CliArgs.convert + " is not yet implemented")
