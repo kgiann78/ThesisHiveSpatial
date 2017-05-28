@@ -34,10 +34,10 @@ public class Main {
 //                "STORED AS INPUTFORMAT 'com.esri.json.hadoop.EnclosedJsonInputFormat'\n" +
 //                "OUTPUTFORMAT 'org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat'");
 ////        client.execute("DROP TABLE tmp_geo_values_parquet");
-        client.execute("CREATE EXTERNAL TABLE tmp_geo_values " +
-                "(id int, srid int, strdfgeo  binary) " +
-                " STORED AS PARQUET LOCATION " +
-                "'hdfs:///tmp_geo_values_parquet'");
+//        client.execute("CREATE EXTERNAL TABLE tmp_geo_values " +
+//                "(id int, srid int, strdfgeo  binary) " +
+//                " STORED AS PARQUET LOCATION " +
+//                "'hdfs:///tmp_geo_values_parquet'");
 //        client.execute("DROP TABLE tmp_geo_values");
 
         client.execute("show tables");
