@@ -9,3 +9,4 @@ That is the infrastructure where the spark applications and the Thrift server ar
 More information of the spark applications read at
 1. https://github.com/kgiann78/thesis-spatial/tree/master/thesis-database-importer
 2. https://github.com/kgiann78/thesis-spatial/tree/master/thesis-thrift-server
+3. https://github.com/kgiann78/thesis-spatial/tree/master/thesis-thrift-server-client
