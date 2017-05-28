@@ -22,19 +22,26 @@ public class ThriftServerClient {
             System.exit(1);
         }
         try (Connection con = DriverManager.getConnection("jdbc:hive2://" + host + ":10000", username, password)) {
+            System.out.println("Executing query: " + sql);
             Statement stmt = con.createStatement();
             ResultSet resultSet = stmt.executeQuery(sql);
+
+            for (int j = 1; j <= resultSet.getMetaData().getColumnCount(); j++) {
+                System.out.print("|\t" + resultSet.getMetaData().getColumnLabel(j) + "\t|");
+            }
+            System.out.println("");
 
             if (resultSet.getFetchSize() > 0) {
                 while (resultSet.next()) {
                     int i = 1;
                     for (; i < resultSet.getMetaData().getColumnCount(); i++) {
-                        System.out.print(resultSet.getMetaData().getColumnLabel(i) + ": " + resultSet.getObject(i) + ", ");
+                        System.out.print("|\t" + resultSet.getObject(i) + "\t|");
                     }
-                    System.out.println(resultSet.getMetaData().getColumnLabel(i) + ": " + resultSet.getObject(i));
+
+                    System.out.println("|\t" + resultSet.getObject(i) + "\t|");
                 }
             }
-            System.out.println("OK");
+            System.out.println("\n-- OK --\n");
         } catch (SQLException e) {
             e.printStackTrace();
         }
