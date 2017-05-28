@@ -1,0 +1,1 @@
+This is a plain java client to connect to a ThriftServer and execute queries

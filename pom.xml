@@ -23,6 +23,7 @@
     <modules>
         <module>./thesis-thrift-server</module>
         <module>./thesis-database-importer</module>
+        <module>./thesis-thrift-server-client</module>
     </modules>
 
 </project>
