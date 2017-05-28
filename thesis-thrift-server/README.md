@@ -1,10 +1,26 @@
-spark-submit --class ThesisServer --master yarn --deploy-mode cluster target/HiveThrift-jar-with-dependencies.jar false
 
-spark-submit --class ThesisServer --master yarn --deploy-mode client target/HiveThrift-jar-with-dependencies.jar false
+Prior to running the Thrift-Server:
 
-!connect jdbc:hive2://172.18.0.2:10000 di thesis
+Withing the hadoop-master (as of here https://github.com/kgiann78/hadoop-cluster-spark-docker)
+root directory add the following jars to hive:
 
-ADD JAR hdfs://172.18.0.2:9000/user/root/esri-geometry-api-1.2.1.jar;
-ADD JAR hdfs://172.18.0.2:9000/user/root/spatial-sdk-hive-1.2.1-SNAPSHOT.jar;
-ADD JAR hdfs://172.18.0.2:9000/user/root/spatial-sdk-json-1.2.1-SNAPSHOT.jar;
+1. Copy jars directory to root directory of hdfs:
 
+	hadoop fs -put /root/thesis-spatial/thesis-thrift-server/src/main/resources/jars/ /
+2. Grant ownership on these jar files to hive:hdfs
+
+	hadoop fs -chown -R hive:hdfs /jars
+
+Then run the ThesisServer application with spark-submit. This application
+ will copy the jars from hive to the spark instance and it will also create
+ all necessary ESRI Geometry functions.
+
+spark-submit \\ \
+--class ThesisServer \\ \
+--master yarn \\ \
+--deploy-mode client \\ \
+/root/thesis-spatial/thesis-thrift-server/target/hive-thrift-server-jar-with-dependencies.jar
+
+After the thrift-server is started from a terminal open a beeline connection as follows:
+
+!connect jdbc:hive2://host_name_or_host_ip:10000 username password

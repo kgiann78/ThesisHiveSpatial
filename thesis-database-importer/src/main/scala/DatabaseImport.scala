@@ -35,9 +35,11 @@ object DatabaseImport {
     }
 
     import spark.implicits._
+    val connectionString =  "jdbc:postgresql://" + CliArgs.host +":" + CliArgs.port + "/"
 
     val opts = Map(
-      "url" -> "jdbc:postgresql://83.212.119.169:5430/",
+      "url" -> connectionString,
+//      "url" -> "jdbc:postgresql://83.212.119.169:5430/",
       "driver" -> "org.postgresql.Driver",
       "user" -> "postgres",
       "password" -> "mysecretpassword",
@@ -124,6 +126,14 @@ object DatabaseImport {
 
   object CliArgs {
 
+    @Option(name = "-host", required = true,
+      usage = "The host address to the postgres database")
+    var host: String = "83.212.119.169"
+
+    @Option(name = "-port", required = true,
+      usage = "The port of the postgres database")
+    var port: String = "5430"
+
     @Option(name = "-mode", required = true,
       usage = "Declares spark session mode (client or cluster)")
     var spark_mode: String = _
@@ -131,10 +141,6 @@ object DatabaseImport {
     @Option(name = "-table", required = true,
       usage = "Table to prepare")
     var table: String = _
-
-    @Option(name = "-column",
-      usage = "Column to overwrite")
-    var column: String = _
 
     @Option(name = "-convert",
       usage = "Conversion method to use (wkt2geoJSON or wkt2text) ")
