@@ -1,9 +1,5 @@
 import java.net.URL
 
-import com.esri.core.geometry.ogc.OGCGeometry
-import com.vividsolutions.jts.geom.Geometry
-import com.vividsolutions.jts.io.WKBReader
-
 import org.apache.hadoop.fs.FsUrlStreamHandlerFactory
 import org.apache.spark.sql.SparkSession
 import org.apache.spark.sql.hive.thriftserver.HiveThriftServer2
@@ -217,18 +213,5 @@ object ThesisServer {
     spark.sql("create function ST_Aggr_Union as 'com.esri.hadoop.hive.ST_Aggr_Union'")
     spark.sql("create function ST_Bin as 'com.esri.hadoop.hive.ST_Bin'")
     spark.sql("create function ST_BinEnvelope as 'com.esri.hadoop.hive.ST_BinEnvelope'")
-
-
-
-
-    //spark.sql("CREATE TABLE demo_shape_point(shape string) STORED AS ORC")
-
-    //spark.sql("INSERT INTO demo_shape_point VALUES ('POINT (-74.140007019999985 39.650001530000054)')")
-
-    //spark.sql("SELECT * FROM demo_shape_point").collect().foreach(println)
-
-    //spark.sql("SELECT ST_AsJson(ST_Polygon(1.5,2.5, 3.0,2.2, 2.2,1.1))").collect().foreach(println)
-
-    //spark.close()
   }
 }
