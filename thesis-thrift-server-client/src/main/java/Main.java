@@ -35,14 +35,34 @@ public class Main {
 //                "OUTPUTFORMAT 'org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat'");
 ////        client.execute("DROP TABLE tmp_geo_values_parquet");
 
+        client.execute("DROP TABLE IF EXISTS tmp_geo_values");
+        client.execute("DROP TABLE IF EXISTS tmp_geo_values_parquet");
+        client.execute("CREATE TABLE tmp_geo_values_parquet " +
+                "(id int, srid int, strdfgeo string) " +
+                " STORED AS PARQUET LOCATION " +
+                "'hdfs:///tmp_geo_values_parquet'");
 
-//        client.execute("CREATE EXTERNAL TABLE tmp_geo_values " +
-//                "(id int, srid int, strdfgeo  string) " +
-//                " STORED AS PARQUET LOCATION " +
-//                "'hdfs:///tmp_geo_values_parquet'");
-//        client.execute("DROP TABLE tmp_geo_values");
+        client.execute("CREATE TABLE tmp_geo_values " +
+                " AS (SELECT id, srid, ST_GeomFromText(strdfgeo) from tmp_geo_values_parquet)");
+
+        client.execute("DROP TABLE IF EXISTS tmp_geo_values_parquet");
+
+//        "ROW FORMAT DELIMITED FIELDS TERMINATED BY ','\n" +
+//                "STORED AS TEXTFILE");
+//        client.execute("LOAD DATA INPATH " +
+//                "'tmp_geo_values.csv' " +
+//                "OVERWRITE INTO TABLE tmp_geo_values");
+
+
+//        client.execute("ADD JAR hdfs:///jars/esri-geometry-api-1.2.1.jar");
+//        client.execute("ADD JAR hdfs:///jars/spatial-sdk-hive-1.2.1-SNAPSHOT.jar");
+//        client.execute("ADD JAR hdfs:///jars/spatial-sdk-json-1.2.1-SNAPSHOT.jar");
 
         client.execute("show tables");
+
+        client.execute("select count(*) from tmp_geo_values");
+        client.execute("select * from tmp_geo_values");
+
 
 //        client.execute("SELECT count(*) FROM type_855540 WHERE obj='805450457'");
 //        client.execute("SELECT COUNT(*) FROM tmp_geo_values l_o2 " +
@@ -59,7 +79,6 @@ public class Main {
 //                "WHERE l_o2.id = '1610612741'");
 
 //        client.execute("select * from tmp_geo_values limit 1");
-
 
 
     }
