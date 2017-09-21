@@ -23,6 +23,8 @@
     <modules>
         <module>./thesis-thrift-server</module>
         <module>./thesis-database-importer</module>
+        <module>thesis-hiveserver</module>
+        <module>thesis-hive-client</module>
     </modules>
 
 </project>

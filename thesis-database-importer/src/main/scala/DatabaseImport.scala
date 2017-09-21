@@ -81,6 +81,8 @@ object DatabaseImport {
             g0.asText()
           }
 
+          spark.sqlContext.udf.register("wkt2text", wkt2text)
+
           val wkt2textUDF = udf(wkt2text)
 
           println("Creating table " + CliArgs.table + "_parquet to hive")
